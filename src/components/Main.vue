@@ -8,21 +8,27 @@
           <li v-for="(item, index) in apiData" :key="index"
               @dblclick="highlightItem(index)"
               :class="{ 'highlighted': index === selectedIndex }"
-              @click="displayStateDetails(index)">
+              @click="displayStateDetails(item)">
             {{ item.state }}
           </li>
         </ul>
       </section>
-      <section class="flex">
+      <section class="flex" v-if="displaySecondSelection">
+        <div>
+          <input type="text" v-model="filterText" placeholder="filter by name">
+        </div>
         <p>Duplicate List</p>
-        <ul v-if="displaySecondSelection">
-          <li v-for="(item, index) in duplicateList" :key="index"
+        <ul>
+          <li v-for="(item, index) in filteredItems" :key="index"
+              @dblclick="highlightItem(index)"
+              @click="displayStateDetails(item)"
               :class="{ 'highlighted': index === selectedIndex }">
             {{ item.state }}
           </li>
         </ul>
       </section>
-      <section class="flex">
+
+      <section class="flex" v-if="displaySecondSelection">
         <p>State Counties Details</p>
         <p>{{ state }}</p>
         <p>State Population</p>
@@ -31,9 +37,14 @@
         <p>{{ countiesLength }}</p>
         <ul v-if="displaySecondSelection">
           <li v-for="(item, index) in countiesDetails" :key="index">
-            {{ item.county }}
+            {{ item.county }} population: {{item.population}}
           </li>
         </ul>
+        <p>county population</p>
+        <p>{{ countiePopulation }}</p>
+        <p>record</p>
+        <p>state population: {{statePopulation}} countie populaiton: {{ countiePopulation }}</p>
+        <p>{{record}}</p>
       </section>
     </div>
   </div>
@@ -45,6 +56,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      filterText: '',
       apiData: [],
       duplicateList: [],
       displaySecondSelection: false,
@@ -52,7 +64,9 @@ export default {
       state: null,
       statePopulation: 0,
       countiesLength: 0,
-      countiesDetails:[]
+      countiesDetails:[],
+      countiePopulation: 0,
+      record:false
     };
   },
   methods: {
@@ -60,10 +74,9 @@ export default {
       const stateApiRes = await axios.get('http://localhost:8080/state');
       this.apiData = stateApiRes.data ?? [];
     },
-    async displayStateDetails(index) {
-      const stateName = this.apiData[index];
-      this.state = stateName.state;
-      const stateId = stateName.id;
+    async displayStateDetails(item) {
+      this.state = item.state;
+      const stateId = item.id;
       this.duplicateList = this.apiData;
       this.displaySecondSelection = true;
       const stateApiRes = await axios.get(`http://localhost:8080/county/${stateId}`);
@@ -72,6 +85,10 @@ export default {
       this.statePopulation = parseInt(stateApiResData.sumDetails[0].statepopulation, 10);
       this.countiesLength = stateApiResData.countiesDetails.length;
       this.countiesDetails = stateApiResData.countiesDetails;
+      this.countiePopulation = parseInt(stateApiResData.sumDetails[0].sumcountypopulation, 10);
+      if (this.countiePopulation === this.statePopulation) {
+        this.record = true;
+      }
     },
     highlightItem(index) {
       this.selectedIndex = index;
@@ -79,7 +96,13 @@ export default {
   },
   beforeMount() {
     this.getStates()
-  }
+  },
+  computed: {
+    filteredItems() {
+      const filterText = this.filterText.toLowerCase();
+      return this.duplicateList.filter(item => item.state.toLowerCase().includes(filterText));
+    },
+  },
 };
 </script>
 <style>
