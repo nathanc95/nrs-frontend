@@ -1,29 +1,22 @@
-# nrs
+### NRS Back end
 
-This template should help get you started developing with Vue 3 in Vite.
+Front end service for the nrs app that display states and counties informations to users
 
-## Recommended IDE Setup
+Prerequisites
+Before getting started with this project, you should have the following installed:
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Docker
 
-## Customize configuration
+### Getting Started
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+clone github repository: git clone https://github.com/nathanc95/nrs-frontend.git
 
-## Project Setup
+pull docker image: nathanchemla95/nrs-frontend
 
-```sh
-npm install
-```
+run the docker image
 
-### Compile and Hot-Reload for Development
+### Here is short list of libraries that are used
 
-```sh
-npm run dev
-```
+axios
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+vue
