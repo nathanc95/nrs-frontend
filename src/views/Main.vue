@@ -68,19 +68,29 @@ export default {
       this.apiData = stateApiRes.data ?? [];
     },
     async displayStateDetails(item) {
-      this.state = item.state;
-      const stateId = item.id;
-      this.duplicateList = this.apiData;
-      this.displaySecondSelection = true;
-      const stateApiRes = await axios.get(this.NRS_BACKEND + `/county/${stateId}`);
-      const stateApiResData = stateApiRes.data;
-      this.statePopulation = parseInt(stateApiResData.sumDetails[0].statepopulation, 10);
-      this.countiesLength = stateApiResData.countiesDetails.length;
-      this.countiesDetails = stateApiResData.countiesDetails;
-      this.countiePopulation = parseInt(stateApiResData.sumDetails[0].sumcountypopulation, 10);
-      if (this.countiePopulation === this.statePopulation) {
-        this.record = true;
-      }
+      try {
+        this.state = item.state;
+        const stateId = item.id;
+        this.duplicateList = this.apiData;
+        this.displaySecondSelection = true;
+        const stateApiRes = await axios.get(this.NRS_BACKEND + `/county/${stateId}`);
+        const stateApiResData = stateApiRes.data;
+        const statePopulation = stateApiResData?.sumDetails?.[0]?.statepopulation;
+        const countiePopulation = stateApiResData?.sumDetails?.[0]?.sumcountypopulation;
+        if (statePopulation !== undefined) {
+          this.statePopulation = parseInt(stateApiResData?.sumDetails?.[0]?.statepopulation, 10);
+        }
+
+        if (countiePopulation !== undefined) {
+          this.countiePopulation = parseInt(stateApiResData.sumDetails[0].sumcountypopulation, 10);
+        }
+
+        this.countiesLength = stateApiResData.countiesDetails.length;
+        this.countiesDetails = stateApiResData.countiesDetails;
+        if (this.countiePopulation === this.statePopulation) {
+          this.record = true;
+        }
+      } catch (err) {}
     },
     highlightItem(index) {
       this.selectedIndex = index;
