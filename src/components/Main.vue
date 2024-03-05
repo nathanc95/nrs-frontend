@@ -101,6 +101,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 /* Add styles for the highlighted option */
