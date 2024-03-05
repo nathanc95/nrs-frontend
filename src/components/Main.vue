@@ -58,12 +58,14 @@ export default {
       countiesLength: 0,
       countiesDetails: [],
       countiePopulation: 0,
-      record: false
+      record: false,
+      NRS_BACKEND: import.meta.env.VITE_NRS_BACKEND_PATH
     };
   },
   methods: {
     async getStates() {
-      const stateApiRes = await axios.get('http://localhost:8080/state');
+      console.log(import.meta.env)
+      const stateApiRes = await axios.get(this.NRS_BACKEND + '/state');
       this.apiData = stateApiRes.data ?? [];
     },
     async displayStateDetails(item) {
@@ -71,7 +73,7 @@ export default {
       const stateId = item.id;
       this.duplicateList = this.apiData;
       this.displaySecondSelection = true;
-      const stateApiRes = await axios.get(`http://localhost:8080/county/${stateId}`);
+      const stateApiRes = await axios.get(this.NRS_BACKEND + `/county/${stateId}`);
       const stateApiResData = stateApiRes.data;
       this.statePopulation = parseInt(stateApiResData.sumDetails[0].statepopulation, 10);
       this.countiesLength = stateApiResData.countiesDetails.length;
