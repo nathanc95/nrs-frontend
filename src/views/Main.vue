@@ -3,26 +3,22 @@
       <div class="list">
         <p>Original List</p>
         <ul>
-          <li v-for="(item, index) in apiData" :key="index"
-              @dblclick="highlightItem(index)"
-              :class="{ 'highlighted': index === selectedIndex }"
-              @click="displayStateDetails(item)">
-            {{ item.state }}
-          </li>
+          <List v-for="(item, index) in apiData" :key="index"
+                @click="displayStateDetails(item)"
+                @dblclick="highlightItem(index)"
+                :isHighlighted="index === selectedIndex"
+                :item="item"></List>
         </ul>
       </div>
       <div class="list" v-if="displaySecondSelection">
-        <div>
-          <input type="text" v-model="filterText" placeholder="filter by name">
-        </div>
+        <search-duplicate v-model="filterText"></search-duplicate>
         <p>Duplicate List</p>
         <ul>
-          <li v-for="(item, index) in filteredItems" :key="index"
-              @dblclick="highlightItem(index)"
-              @click="displayStateDetails(item)"
-              :class="{ 'highlighted': index === selectedIndex }">
-            {{ item.state }}
-          </li>
+          <List v-for="(item, index) in filteredItems" :key="index"
+                @click="displayStateDetails(item)"
+                @dblclick="highlightItem(index)"
+                :isHighlighted="index === selectedIndex"
+                :item="item"></List>
         </ul>
       </div>
 
@@ -44,8 +40,11 @@
 
 <script>
 import axios from 'axios';
+import SearchDuplicate from "@/components/SearchDuplicate.vue";
+import List from "@/components/List.vue";
 
 export default {
+  components: {List, SearchDuplicate},
   data() {
     return {
       filterText: '',
