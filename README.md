@@ -12,6 +12,7 @@ Docker
 clone github repository: git clone https://github.com/nathanc95/nrs-frontend.git
 
 run on the repository terminal: docker-compose build 
+
 once build is ready, run: docker-compose up
 
 ### Here is short list of libraries that are used
