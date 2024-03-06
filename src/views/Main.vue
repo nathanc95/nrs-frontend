@@ -1,39 +1,48 @@
 <template>
   <div id="nrsApp">
-      <div class="list">
-        <p>Original List</p>
+      <div class="list" v-if="apiData">
+        <p>Original State List</p>
         <ul>
           <List v-for="(item, index) in apiData" :key="index"
                 @click="displayStateDetails(item)"
                 @dblclick="highlightItem(index)"
-                :isHighlighted="index === selectedIndex"
+                :isHighlighted="(index === selectedIndex) && displayHighlighted"
                 :item="item"></List>
         </ul>
       </div>
-      <div class="list" v-if="displaySecondSelection">
+      <div class="list" v-if="duplicateList">
         <search-duplicate v-model="filterText"></search-duplicate>
-        <p>Duplicate List</p>
+        <p>Duplicate State List</p>
         <ul>
           <List v-for="(item, index) in filteredItems" :key="index"
                 @click="displayStateDetails(item)"
                 @dblclick="highlightItem(index)"
-                :isHighlighted="index === selectedIndex"
+                :isHighlighted="(index === selectedIndex) && displayHighlighted"
                 :item="item"></List>
         </ul>
       </div>
 
       <div class="list" v-if="displaySecondSelection">
-        <p>State Counties Details: {{ state }}</p>
-        <p>State Population: {{ statePopulation }}</p>
-        <p>Number of counties: {{ countiesLength }}</p>
-        <ul v-if="displaySecondSelection">
-          <li v-for="(item, index) in countiesDetails" :key="index">
-            {{ item.county }} population: {{ item.population }}
-          </li>
+        <div class="stateInfo">
+        <ul>
+          <li><span>State Name </span><span class="bold"> {{ state }}</span></li>
+          <li><span>State Population </span><span class="bold"> {{ statePopulation }}</span></li>
+          <li><span>sum of county population </span> <span class="bold"> {{ countiePopulation }}</span></li>
+          <li v-if="countiePopulation === statePopulation"><span>Countie population match the state population</span></li>
+          <li v-if="countiePopulation !== statePopulation"><span>Countie population doesn't match the State population</span></li>
+          <li><span>State Number of counties </span><span class="bold"> {{ countiesLength }}</span></li>
         </ul>
-        <p>county population {{ countiePopulation }}</p>
-        <p>state population: {{ statePopulation }} countie population: {{ countiePopulation }}</p>
-        <p>record state population match sum of counties populations: {{ record }}</p>
+        </div>
+        <div class="stateInfo">
+          <ul v-if="displaySecondSelection">
+            <li v-for="(item, index) in countiesDetails" :key="index">
+              <span>{{ item.county }} population:</span><span class="bold">{{ item.population }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div v-if="apiErrorResponse">
+        <span>{{apiErrorResponse}}</span>
       </div>
   </div>
 </template>
@@ -47,10 +56,12 @@ export default {
   components: {List, SearchDuplicate},
   data() {
     return {
+      displayHighlighted: false,
+      apiErrorResponse:null,
       filterText: '',
-      apiData: [],
-      duplicateList: [],
-      displaySecondSelection: false,
+      apiData: null,
+      duplicateList: null,
+      displaySecondSelection: null,
       selectedIndex: null,
       state: null,
       statePopulation: 0,
@@ -63,20 +74,23 @@ export default {
   },
   methods: {
     async getStates() {
-      console.log(import.meta.env)
-      const stateApiRes = await axios.get(this.NRS_BACKEND + '/state');
-      this.apiData = stateApiRes.data ?? [];
+      try {
+        const stateApiRes = await axios.get(this.NRS_BACKEND + '/state');
+        this.apiData = stateApiRes.data ?? [];
+        this.duplicateList = this.apiData;
+      } catch (err) {
+        this.apiErrorResponse = 'unable to retrieve state data';
+      }
     },
     async displayStateDetails(item) {
       try {
         this.state = item.state;
         const stateId = item.id;
-        this.duplicateList = this.apiData;
-        this.displaySecondSelection = true;
         const stateApiRes = await axios.get(this.NRS_BACKEND + `/county/${stateId}`);
         const stateApiResData = stateApiRes.data;
         const statePopulation = stateApiResData?.sumDetails?.[0]?.statepopulation;
         const countiePopulation = stateApiResData?.sumDetails?.[0]?.sumcountypopulation;
+
         if (statePopulation !== undefined) {
           this.statePopulation = parseInt(stateApiResData?.sumDetails?.[0]?.statepopulation, 10);
         }
@@ -84,16 +98,23 @@ export default {
         if (countiePopulation !== undefined) {
           this.countiePopulation = parseInt(stateApiResData.sumDetails[0].sumcountypopulation, 10);
         }
-
         this.countiesLength = stateApiResData.countiesDetails.length;
         this.countiesDetails = stateApiResData.countiesDetails;
         if (this.countiePopulation === this.statePopulation) {
           this.record = true;
         }
-      } catch (err) {}
+        this.displaySecondSelection = true;
+      } catch (err) {
+        this.apiErrorResponse = 'unable to retrieve state details';
+      }
     },
     highlightItem(index) {
+      if (index === this.selectedIndex && this.displayHighlighted) {
+        this.displayHighlighted = false;
+        return;
+      }
       this.selectedIndex = index;
+      this.displayHighlighted = true;
     },
   },
   beforeMount() {
@@ -108,6 +129,14 @@ export default {
 };
 </script>
 <style>
+.stateInfo li {
+  display: flex;
+  justify-content: space-between;
+}
+.bold {
+ font-weight: bold;
+}
+
 #nrsApp {
   display: flex;
   justify-content: center;
@@ -142,5 +171,13 @@ li {
 
 li:hover {
   background-color: #f0f0f0;
+}
+
+li:nth-child(even) {
+  background-color: #f0f0f0; /* Grey background for even-numbered items */
+}
+
+li:nth-child(odd) {
+  background-color: #ffffff; /* White background for odd-numbered items */
 }
 </style>
