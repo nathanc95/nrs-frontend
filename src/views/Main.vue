@@ -1,7 +1,7 @@
 <template>
   <div id="nrsApp">
       <div class="list" v-if="apiData">
-        <p>Original State List</p>
+        <p class="bold">Original State List</p>
         <ul>
           <List v-for="(item, index) in apiData" :key="index"
                 @click="displayStateDetails(item)"
@@ -12,7 +12,7 @@
       </div>
       <div class="list" v-if="duplicateList">
         <search-duplicate v-model="filterText"></search-duplicate>
-        <p>Duplicate State List</p>
+        <p class="bold">Duplicate State List</p>
         <ul>
           <List v-for="(item, index) in filteredItems" :key="index"
                 @click="displayStateDetails(item)"
@@ -27,7 +27,7 @@
         <ul>
           <li><span>State Name </span><span class="bold"> {{ state }}</span></li>
           <li><span>State Population </span><span class="bold"> {{ statePopulation }}</span></li>
-          <li><span>sum of county population </span> <span class="bold"> {{ countiePopulation }}</span></li>
+          <li><span>Sum of county population </span> <span class="bold"> {{ countiePopulation }}</span></li>
           <li v-if="countiePopulation === statePopulation"><span>Countie population match the state population</span></li>
           <li v-if="countiePopulation !== statePopulation"><span>Countie population doesn't match the State population</span></li>
           <li><span>State Number of counties </span><span class="bold"> {{ countiesLength }}</span></li>
