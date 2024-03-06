@@ -1,6 +1,7 @@
 <template>
   <div id="nrsApp">
       <div class="list" v-if="apiData">
+        <div class="originalList"></div>
         <p class="bold">Original State List</p>
         <ul>
           <List v-for="(item, index) in apiData" :key="index"
@@ -33,7 +34,7 @@
           <li><span>State Number of counties </span><span class="bold"> {{ countiesLength }}</span></li>
         </ul>
         </div>
-        <div class="stateInfo">
+        <div class="stateInfo countyStateInfo">
           <ul v-if="displaySecondSelection">
             <li v-for="(item, index) in countiesDetails" :key="index">
               <span>{{ item.county }} population:</span><span class="bold">{{ item.population }}</span>
@@ -129,6 +130,21 @@ export default {
 };
 </script>
 <style>
+.countyStateInfo {
+  border: 1px solid #00000012;
+  margin-top: 1em;
+  border-radius: 15px;
+  padding: 0.3em;
+}
+
+input {
+  border-radius: 5px;
+  border: 1px solid #8080808f;
+  padding: 0.5em;
+}
+.originalList {
+  height: 2em;
+}
 .stateInfo li {
   display: flex;
   justify-content: space-between;
@@ -155,6 +171,7 @@ ul li.highlighted {
   padding: 10px;
   overflow-y: scroll;
   height: 25em;
+  background-color: #ffff;
 }
 
 ul {
