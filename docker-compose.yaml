@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nathanchemla95/nrs-frontend
+    container_name: nrs-frontend-app-container
+    ports:
+      - "8080:8080"
