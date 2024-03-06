@@ -11,9 +11,8 @@ Docker
 
 clone github repository: git clone https://github.com/nathanc95/nrs-frontend.git
 
-pull docker Hub image: nathanchemla95/nrs-frontend
-
-run on the repository terminal: docker run -it -p 8080:8080 --rm --name dockerize-vuejs-app 602c16cc0f3c
+run on the repository terminal: docker-compose build 
+once build is ready, run: docker-compose up
 
 ### Here is short list of libraries that are used
 
