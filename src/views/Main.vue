@@ -162,7 +162,7 @@ input {
 
 /* Add styles for the highlighted option */
 ul li.highlighted {
-  background-color: yellow;
+  background-color: #cccccceb;
   font-weight: bold;
 }
 
